@@ -1,20 +1,27 @@
 import { useState } from "react";
-import gapis from "googleapis";
 
 import keys from "./gapis.keys.json";
 
-function getEvents() {
-  const calendar = gapis.calendar_v3({
-    auth: keys.apiKey,
-  });
+const CALENDAR_ID = "l20qk6u5qoa84jvslc69em9v3s@group.calendar.google.com";
 
-  calendar.events
-    .list({
-      calendarId: "l20qk6u5qoa84jvslc69em9v3s@group.calendar.google.com",
+function getEvents() {
+  window.gapi.client
+    .init({
+      apiKey: keys.apiKey,
     })
-    .then((response) => {
-      console.log(response);
-    });
+    .then(() => {
+      return window.gapi.client.request({
+        path: `https://www.googleapis.com/calendar/v3/calendars/${CALENDAR_ID}/events`,
+      });
+    })
+    .then(
+      (response) => {
+        console.log(response.result);
+      },
+      (reason) => {
+        console.error(reason.result.error.message);
+      }
+    );
 }
 
 function App() {
